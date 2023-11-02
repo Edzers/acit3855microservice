@@ -1,0 +1,112 @@
+openapi: 3.0.0
+info:
+  title: Trading Card Prices API
+  description: An API that collects pricing data from trading cards via aggregate selling sites and allows users to rate sellers.
+  contact:
+    email: zwang257@my.bcit.ca
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: card
+  description: Operations related to trading cards and their sellers
+paths:
+  /cards/input-card:
+    post:
+      tags:
+      - card
+      summary: Adds a card
+      description: Adds a card to the database
+      operationId: app.add_card_database
+      requestBody:
+        description: Reading the card which will be added to the database
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AddCardDatabase'
+      responses:
+        "201":
+          description: Card added successfully
+        "400":
+          description: Invalid input
+  /cards/rate-seller:
+    post:
+      tags:
+      - card
+      summary: Submits a seller rating
+      description: Allows users to rate a card seller based on their experience with a particular card purchase.
+      operationId: app.rate_seller
+      requestBody:
+        description: The rating details for the seller
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SellerRating'
+      responses:
+        "201":
+          description: Seller rating added successfully
+        "400":
+          description: Invalid input
+components:
+  schemas:
+    AddCardDatabase:
+      required:
+      - brand
+      - condition
+      - date_added
+      - price
+      - seller_id
+      - website
+      properties:
+        card_id:
+          type: string
+          format: uuid
+          readOnly: true  # card_id is now read-only as it's generated on the server
+        brand:
+          type: string
+          example: Yugioh
+        price:
+          type: integer
+          example: 35
+        condition:
+          type: string
+          example: Good
+        website:
+          type: string
+          example: ebay.com
+        seller_id:
+          type: string
+          example: eddie_124
+        date_added:
+          format: date-time
+          example: 2023-09-07
+    SellerRating:
+      required:
+      - seller_id
+      - rating
+      - user_id
+      - comment
+      - date_rated
+      properties:
+        rating_id:
+          type: string
+          format: uuid
+          readOnly: true  # rating_id is now read-only as it's generated on the server
+        seller_id:
+          type: string
+          example: eddie_124
+        user_id:
+          type: string
+          example: collector_joe
+        rating:
+          type: integer
+          format: int32
+          example: 4
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          example: "Reliable and fast shipping!"
+        date_rated:
+          format: date-time
+          example: 2023-09-07

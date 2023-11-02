@@ -1,0 +1,140 @@
+openapi: 3.0.0
+info:
+  title: Trading Card Prices API
+  description: An API that collects pricing data from trading cards via aggregate selling sites and allows users to rate sellers.
+  contact:
+    email: zwang257@my.bcit.ca
+  version: 1.0.0
+servers:
+- url: /
+tags:
+- name: card
+  description: Operations related to trading cards and their sellers
+paths:
+  /cards/events/input-card:
+    get:
+      tags:
+      - card
+      summary: gets new card input events
+      operationId: app.get_card_input_events
+      description: Gets card input events added after a timestamp
+      parameters:
+      - name: timestamp
+        in: query
+        description: Timestamp to retrieve events from
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2023-10-10T09:12:33.001Z
+      responses:
+        '200':
+          description: Successfully returned a list of card input events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/AddCardDatabase'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /cards/events/rate-seller:
+    get:
+      tags:
+      - card
+      summary: gets new seller rating events
+      operationId: app.get_seller_rating_events
+      description: Gets seller rating events added after a timestamp
+      parameters:
+      - name: timestamp
+        in: query
+        description: Timestamp to retrieve events from
+        required: true
+        schema:
+          type: string
+          format: date-time
+          example: 2023-10-10T09:12:33.001Z
+      responses:
+        '200':
+          description: Successfully returned a list of seller rating events
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SellerRating'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+components:
+  schemas:
+    AddCardDatabase:
+      required:
+      - brand
+      - card_id
+      - condition
+      - date_added
+      - price
+      - seller_id
+      - website
+      properties:
+        card_id:
+          type: string
+          format: uuid
+        brand:
+          type: string
+          example: Yugioh
+        price:
+          type: integer
+          example: 35
+        condition:
+          type: string
+          example: Good
+        website:
+          type: string
+          example: ebay.com
+        seller_id:
+          type: string
+          example: eddie_124
+        date_added:
+          format: date-time
+          example: 2023-09-07
+    SellerRating:
+      required:
+      - seller_id
+      - rating
+      - user_id
+      - comment
+      - date_rated
+      properties:
+        seller_id:
+          type: string
+          example: eddie_124
+        user_id:
+          type: string
+          example: collector_joe
+        rating:
+          type: integer
+          format: int32
+          example: 4
+          minimum: 1
+          maximum: 5
+        comment:
+          type: string
+          example: "Reliable and fast shipping!"
+        date_rated:
+          format: date-time
+          example: 2023-09-07

@@ -1,0 +1,138 @@
+openapi: 3.0.0
+info:
+  description: "This API provides audit info for card_input and rate_seller events"
+  version: 1.0.0
+  title: Audit API
+  contact:
+    email: zwang257@my.bcit.ca
+
+paths:
+  /card_input:
+    get:
+      summary: Get a card_input event from history
+      operationId: app.get_card_input_event
+      description: Gets card_input event from the event store at the specified index
+      parameters:
+        - name: index
+          in: query
+          description: Index of the card_input event in the event store
+          schema:
+            type: integer
+            example: 3
+      responses:
+        '200':
+          description: Successfully returned a card_input event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/CardInputEvent'
+        '400':
+          description: Invalid request
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /rate_seller:
+    get:
+      summary: Get a rate_seller event from history
+      operationId: app.get_rate_seller_event
+      description: Gets rate_seller event from the event store at the specified index
+      parameters:
+        - name: index
+          in: query
+          description: Index of the rate_seller event in the event store
+          schema:
+            type: integer
+            example: 2
+      responses:
+        '200':
+          description: Successfully returned a rate_seller event
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateSellerEvent'
+        '400':
+          description: Invalid request
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+components:
+  schemas:
+    CardInputEvent:
+      required:
+        - card_id
+        - brand
+        - condition
+        - date_added
+        - price
+        - seller_id
+        - website
+      properties:
+        card_id:
+          type: string
+          format: uuid
+          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+        brand:
+          type: string
+          example: 'Yugioh'
+        condition:
+          type: string
+          example: 'Good'
+        date_added:
+          type: string
+          format: date-time
+          example: '2023-09-07T09:12:33.001Z'
+        price:
+          type: integer
+          example: 35
+        seller_id:
+          type: string
+          example: 'eddie_124'
+        website:
+          type: string
+          example: 'ebay.com'
+      type: object
+
+    RateSellerEvent:
+      required:
+        - rating_id
+        - seller_id
+        - user_id
+        - rating
+        - comment
+        - date_rated
+      properties:
+        rating_id:
+          type: string
+          format: uuid
+          example: 'd290f1ee-6c54-4b01-90e6-d701748f0852'
+        seller_id:
+          type: string
+          example: 'eddie_124'
+        user_id:
+          type: string
+          example: 'collector_joe'
+        rating:
+          type: integer
+          example: 4
+        comment:
+          type: string
+          example: 'Reliable and fast shipping!'
+        date_rated:
+          type: string
+          format: date-time
+          example: '2023-09-07T09:12:33.001Z'
+      type: object

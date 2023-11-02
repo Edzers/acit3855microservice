@@ -1,0 +1,59 @@
+openapi: 3.0.0
+info:
+  title: Trading Card Stats API
+  description: An API that provides statistics on trading cards and seller ratings.
+  contact:
+    email: zwang257@my.bcit.ca
+  version: "1.0.0"
+servers:
+  - url: /
+tags:
+  - name: statistics
+    description: Operations related to trading cards statistics
+paths:
+  /stats:
+    get:
+      tags:
+        - statistics
+      summary: Gets the trading card events statistics
+      operationId: app.get_stats
+      description: Gets processed statistics for trading cards and seller ratings
+      responses:
+        '200':
+          description: Successfully returned the statistics
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TradingCardStats'
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+components:
+  schemas:
+    TradingCardStats:
+      required:
+        - num_card_events
+        - num_seller_rating_events
+        - avg_card_price
+        - avg_seller_rating
+      properties:
+        num_card_events:
+          type: integer
+          example: 1000
+        num_seller_rating_events:
+          type: integer
+          example: 400
+        avg_card_price:
+          type: number
+          format: float
+          example: 45.67
+        avg_seller_rating:
+          type: number
+          format: float
+          example: 4.3

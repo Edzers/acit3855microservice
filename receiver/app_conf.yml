@@ -1,0 +1,11 @@
+version: 1
+/cards/rate-seller:
+  url: http://127.0.0.1:8090/cards/rate-seller
+
+/cards/input-card:
+  url: http://127.0.0.1:8090/cards/input-card
+
+events:
+  hostname: acit3855group45kafka.eastus2.cloudapp.azure.com
+  port: 9092
+  topic: events
