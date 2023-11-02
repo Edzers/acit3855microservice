@@ -8,8 +8,8 @@ from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 import logging.config
 import yaml
-from card_database import add_card
-from rate_seller_database import SellerRating
+from Storage.card_database import add_card
+from Storage.rate_seller_database import SellerRating
 from sqlalchemy.sql import func
 import logging
 import requests
