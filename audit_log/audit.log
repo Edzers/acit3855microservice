@@ -1,0 +1,8 @@
+2023-11-06 22:12:22,082 - basicLogger - INFO - Retrieving rate_seller at index 0
+2023-11-06 22:12:23,090 - basicLogger - ERROR - Could not find rate_seller at index 0
+2023-11-06 22:12:37,116 - basicLogger - INFO - Retrieving rate_seller at index 1
+2023-11-06 22:12:38,129 - basicLogger - ERROR - Could not find rate_seller at index 1
+2023-11-06 22:13:02,370 - basicLogger - INFO - Retrieving card_input at index 1
+2023-11-06 22:13:04,376 - basicLogger - ERROR - Could not find card_input at index 1
+2023-11-06 22:13:15,622 - basicLogger - INFO - Retrieving card_input at index 0
+2023-11-06 22:13:17,631 - basicLogger - ERROR - Could not find card_input at index 0

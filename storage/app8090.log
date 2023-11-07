@@ -26,3 +26,8 @@ Traceback (most recent call last):
   File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\topic.py", line 230, in update
     raise LeaderNotFoundError()
 pykafka.exceptions.LeaderNotFoundError
+2023-11-06 22:10:06,146 - basicLogger - INFO - MySQL database hostname: acit3855group45kafka.eastus2.cloudapp.azure.com, port: 3306
+2023-11-06 22:10:26,204 - basicLogger - INFO - MySQL database hostname: acit3855group45kafka.eastus2.cloudapp.azure.com, port: 3306
+2023-11-06 22:10:27,656 - basicLogger - INFO - Connecting to Kafka...
+2023-11-06 22:10:28,227 - basicLogger - INFO - Connected to Kafka.
+2023-11-06 22:10:32,590 - basicLogger - INFO - Consumer created. Listening for messages on topic: events

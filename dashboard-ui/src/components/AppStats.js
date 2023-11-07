@@ -54,6 +54,7 @@ export default function AppStats() {
                             <td>Max Card Price: {stats['max_card_price']}</td>
                             <td>Max Seller Rating: {stats['max_seller_rating']}</td>
                         </tr>
+                            <td>Last Updated: {stats['last_updated']}</td>
                     </tbody>
                 </table>
             </div>

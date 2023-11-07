@@ -114,27 +114,54 @@ def populate_stats():
     logger.info("Periodic processing has ended")
 
 def get_stats():
-    """Handle GET request for /events/stats."""
+    """Handle GET request for /stats."""
     logger.info("Request for statistics started")
 
     try: 
         with open(app_config['datastore']['filename'], 'r') as file:
             stats_file = json.load(file)
-    except:
+    except FileNotFoundError:
+        logger.error("Statistics file not found.")
         return Response("Statistics do not exist", 404)
+    except Exception as e:
+        logger.error(f"Failed to read statistics file: {e}")
+        return Response("Error occurred while fetching statistics", 500)
 
     stats_response = {
         "num_card_events": stats_file["num_card_events"],
         "num_seller_rating_events": stats_file["num_seller_rating_events"],
         "max_card_price": stats_file["max_card_price"],
-        "max_seller_rating": stats_file["max_seller_rating"]
+        "max_seller_rating": stats_file["max_seller_rating"],
+        "last_updated": stats_file["last_updated"]  # Include the last updated timestamp
     }
 
     logger.debug(f"Statistics: {stats_response}")
-
     logger.info("Request for statistics completed")
 
-    return Response(json.dumps(stats_response), 200)
+    return jsonify(stats_response), 200  # Use jsonify for automatic JSON response
+
+# def get_stats():
+#     """Handle GET request for /events/stats."""
+#     logger.info("Request for statistics started")
+
+#     try: 
+#         with open(app_config['datastore']['filename'], 'r') as file:
+#             stats_file = json.load(file)
+#     except:
+#         return Response("Statistics do not exist", 404)
+
+#     stats_response = {
+#         "num_card_events": stats_file["num_card_events"],
+#         "num_seller_rating_events": stats_file["num_seller_rating_events"],
+#         "max_card_price": stats_file["max_card_price"],
+#         "max_seller_rating": stats_file["max_seller_rating"]
+#     }
+
+#     logger.debug(f"Statistics: {stats_response}")
+
+#     logger.info("Request for statistics completed")
+
+#     return Response(json.dumps(stats_response), 200)
 
 def init_scheduler():
     sched = BackgroundScheduler(daemon=True)
