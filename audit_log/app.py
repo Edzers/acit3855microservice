@@ -12,8 +12,11 @@ import yaml
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
 from threading import Thread
+from flask_cors import CORS, cross_origin
 
 app = connexion.FlaskApp(__name__, specification_dir='')
+CORS(app.app)
+app.app.config['CORS_HEADERS'] = 'Content-Type'
 
 with open('./log_conf.yml', 'r') as file:
     config = yaml.safe_load(file)

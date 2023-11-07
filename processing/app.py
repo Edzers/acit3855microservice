@@ -14,7 +14,7 @@ from sqlalchemy.sql import func
 import logging
 import requests
 import os
-
+from flask_cors import CORS, cross_origin
 
 #DB_ENGINE = create_engine("mysql+mysqlconnector://root:password@localhost:3306/Cardapp", echo=True)
 with open('app_conf.yml', 'r') as f:
@@ -28,6 +28,8 @@ DB_ENGINE = create_engine(app_config['database']['url'], echo=True)
 DB_SESSION = sessionmaker(bind=DB_ENGINE)
 
 app = connexion.FlaskApp(__name__, specification_dir='')
+CORS(app.app)
+app.app.config['CORS_HEADERS'] = 'Content-Type'
 
 def calculate_num_card_events(session):
     try:
