@@ -1,0 +1,28 @@
+2023-11-06 20:54:20,272 - basicLogger - INFO - MySQL database hostname: acit3855group45kafka.eastus2.cloudapp.azure.com, port: 3306
+2023-11-06 20:54:21,691 - basicLogger - INFO - Connecting to Kafka...
+2023-11-06 20:54:22,019 - basicLogger - INFO - Connected to Kafka.
+2023-11-06 20:54:22,645 - basicLogger - ERROR - Error in process_messages: 
+Traceback (most recent call last):
+  File "C:\Users\eddie\Desktop\acit3855microservice\storage\app.py", line 47, in process_messages
+    topic = client.topics[str.encode(app_config["events"]["topic"])]
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\cluster.py", line 74, in __getitem__
+    topic = Topic(self._cluster(), meta.topics[key])
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\topic.py", line 67, in __init__
+    self.update(topic_metadata)
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\topic.py", line 230, in update
+    raise LeaderNotFoundError()
+pykafka.exceptions.LeaderNotFoundError
+2023-11-06 20:54:36,521 - basicLogger - INFO - MySQL database hostname: acit3855group45kafka.eastus2.cloudapp.azure.com, port: 3306
+2023-11-06 20:54:38,081 - basicLogger - INFO - Connecting to Kafka...
+2023-11-06 20:54:38,370 - basicLogger - INFO - Connected to Kafka.
+2023-11-06 20:54:38,926 - basicLogger - ERROR - Error in process_messages: 
+Traceback (most recent call last):
+  File "C:\Users\eddie\Desktop\acit3855microservice\storage\app.py", line 47, in process_messages
+    topic = client.topics[str.encode(app_config["events"]["topic"])]
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\cluster.py", line 74, in __getitem__
+    topic = Topic(self._cluster(), meta.topics[key])
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\topic.py", line 67, in __init__
+    self.update(topic_metadata)
+  File "C:\Users\eddie\AppData\Local\Programs\Python\Python310\lib\site-packages\pykafka\topic.py", line 230, in update
+    raise LeaderNotFoundError()
+pykafka.exceptions.LeaderNotFoundError
