@@ -4,58 +4,59 @@ import '../App.css';
 export default function AppStats() {
     const [isLoaded, setIsLoaded] = useState(false);
     const [stats, setStats] = useState({});
-    const [error, setError] = useState(null)
+    const [error, setError] = useState(null);
 
-	const getStats = () => {
-	
-        fetch(`http://<Cloud DNS>:8100/stats`)
-            .then(res => res.json())
-            .then((result)=>{
-				console.log("Received Stats")
-                setStats(result);
-                setIsLoaded(true);
-            },(error) =>{
-                setError(error)
-                setIsLoaded(true);
+    const getStats = () => {
+        fetch(`http://acit3855group45kafka.eastus2.cloudapp.azure.com:8100/stats`)
+            .then(res => {
+                if (!res.ok) {
+                    throw new Error(`HTTP error status: ${res.status}`);
+                }
+                return res.json();
             })
-    }
-    useEffect(() => {
-		const interval = setInterval(() => getStats(), 2000); // Update every 2 seconds
-		return() => clearInterval(interval);
-    }, [getStats]);
+            .then(
+                (result) => {
+                    console.log("Received Stats", result);
+                    setStats(result);
+                    setIsLoaded(true);
+                },
+                (error) => {
+                    setError(error);
+                    setIsLoaded(true);
+                }
+            );
+    };
 
-    if (error){
-        return (<div className={"error"}>Error found when fetching from API</div>)
-    } else if (isLoaded === false){
-        return(<div>Loading...</div>)
-    } else if (isLoaded === true){
-        return(
+    useEffect(() => {
+        const interval = setInterval(() => getStats(), 2000); // Update every 2 seconds
+        return () => clearInterval(interval);
+    }, []);
+
+    if (error) {
+        return <div className={"error"}>Error found when fetching from API: {error.message}</div>;
+    } else if (!isLoaded) {
+        return <div>Loading...</div>;
+    } else {
+        return (
             <div>
                 <h1>Latest Stats</h1>
                 <table className={"StatsTable"}>
-					<tbody>
-						<tr>
-							<th>Blood Pressure</th>
-							<th>Heart Rate</th>
-						</tr>
-						<tr>
-							<td># BP: {stats['num_bp_readings']}</td>
-							<td># HR: {stats['num_hr_readings']}</td>
-						</tr>
-						<tr>
-							<td colspan="2">Max BP Systolic: {stats['max_bp_sys_reading']}</td>
-						</tr>
-						<tr>
-							<td colspan="2">Max BR Diastolic: {stats['max_bp_dia_reading']}</td>
-						</tr>
-						<tr>
-							<td colspan="2">Max HR: {stats['max_bp_sys_reading']}</td>
-						</tr>
-					</tbody>
+                    <tbody>
+                        <tr>
+                            <th>Card Events</th>
+                            <th>Seller Rating Events</th>
+                        </tr>
+                        <tr>
+                            <td># Card Events: {stats['num_card_events']}</td>
+                            <td># Seller Rating Events: {stats['num_seller_rating_events']}</td>
+                        </tr>
+                        <tr>
+                            <td>Avg Card Price: {stats['avg_card_price']}</td>
+                            <td>Avg Seller Rating: {stats['avg_seller_rating']}</td>
+                        </tr>
+                    </tbody>
                 </table>
-                <h3>Last Updated: {stats['last_updated']}</h3>
-
             </div>
-        )
+        );
     }
 }
