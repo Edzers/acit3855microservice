@@ -51,8 +51,8 @@ export default function AppStats() {
                             <td># Seller Rating Events: {stats['num_seller_rating_events']}</td>
                         </tr>
                         <tr>
-                            <td>Avg Card Price: {stats['avg_card_price']}</td>
-                            <td>Avg Seller Rating: {stats['avg_seller_rating']}</td>
+                            <td>Max Card Price: {stats['max_card_price']}</td>
+                            <td>Max Seller Rating: {stats['max_seller_rating']}</td>
                         </tr>
                     </tbody>
                 </table>
