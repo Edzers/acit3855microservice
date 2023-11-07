@@ -41,10 +41,10 @@ app = connexion.FlaskApp(__name__, specification_dir='')
 def process_messages():
     try:
         logger.info("Connecting to Kafka...")
-        hostname = "%s:%d" % (app_config["events"]["hostname"], app_config["events"]["port"])
+        hostname = "%s:%d" % (app_config['events']['hostname'], app_config['events']['port'])
         client = KafkaClient(hosts=hostname)
         logger.info("Connected to Kafka.")
-        topic = client.topics[str.encode(app_config["events"]["topic"])]
+        topic = client.topics[str.encode(app_config['events']['topic'])]
         consumer = topic.get_simple_consumer(consumer_group=b'event_group',
                                              reset_offset_on_start=False,
                                              auto_offset_reset=OffsetType.LATEST)
