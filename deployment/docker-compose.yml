@@ -37,6 +37,14 @@ services:
     depends_on:
       - kafka
 
+  dashboard:
+    image: dashboard
+    ports:
+    - "3000:3000"
+    depends_on:
+    - "processing"
+    - "audit_log"
+
   kafka:
     image: wurstmeister/kafka
     command: [start-kafka.sh]
