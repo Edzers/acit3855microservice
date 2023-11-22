@@ -10,3 +10,6 @@ events:
   hostname: acit3855group45kafka.eastus2.cloudapp.azure.com
   port: 9092
   topic: events 
+kafka:
+  max_retries: 5
+  retry_sleep: 10

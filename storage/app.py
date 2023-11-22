@@ -15,6 +15,8 @@ import yaml
 from pykafka import KafkaClient
 from pykafka.common import OffsetType
 from threading import Thread
+from sqlalchemy import and_
+import time
 
 
 # Logging conf
@@ -38,67 +40,53 @@ logger.info(f'MySQL database hostname: {hostname}, port: {port}')
 DB_SESSION = sessionmaker(bind=DB_ENGINE)   
 app = connexion.FlaskApp(__name__, specification_dir='')
 
+
+# Global variable for KafkaClient
+kafka_client = None
+
+def create_kafka_client():
+    global kafka_client
+    max_retries = app_config['kafka']['max_retries']
+    retry_sleep = app_config['kafka']['retry_sleep']
+    retry_count = 0
+
+    while retry_count < max_retries:
+        try:
+            logger.info(f"Trying to connect to Kafka (Attempt {retry_count + 1}/{max_retries})...")
+            hostname = "%s:%d" % (app_config['events']['hostname'], app_config['events']['port'])
+            kafka_client = KafkaClient(hosts=hostname)
+            logger.info("Connected to Kafka.")
+            break  # Break the loop if connection is successful
+        except Exception as e:
+            logger.error(f"Failed to connect to Kafka: {str(e)}")
+            retry_count += 1
+            if retry_count < max_retries:
+                time.sleep(retry_sleep)
+            else:
+                logger.error("Max retries reached. Unable to connect to Kafka.")
+                raise Exception("Kafka connection failed after max retries")
+
 def process_messages():
+    global kafka_client
     try:
-        logger.info("Connecting to Kafka...")
-        hostname = "%s:%d" % (app_config['events']['hostname'], app_config['events']['port'])
-        client = KafkaClient(hosts=hostname)
-        logger.info("Connected to Kafka.")
-        topic = client.topics[str.encode(app_config['events']['topic'])]
+        topic = kafka_client.topics[str.encode(app_config['events']['topic'])]
         consumer = topic.get_simple_consumer(consumer_group=b'event_group',
                                              reset_offset_on_start=False,
                                              auto_offset_reset=OffsetType.LATEST)
         logger.info(f"Consumer created. Listening for messages on topic: {app_config['events']['topic']}")
-        
         # This is blocking - it will wait for a new message
         for msg in consumer:
             if msg is not None:
                 msg_str = msg.value.decode('utf-8')
                 msg = json.loads(msg_str)
                 logger.info("Received message: %s" % msg)
-                # rest of your code
+                # Process the message here
             else:
                 logger.warning("Received None message")
     except Exception as e:
         logger.error(f"Error in process_messages: {str(e)}", exc_info=True)
 
 
-# def process_messages():
-#     """ Process event messages """
-#     hostname = "%s:%d" % (app_config["events"]["hostname"],
-#     app_config["events"]["port"])
-#     client = KafkaClient(hosts=hostname)
-#     topic = client.topics[str.encode(app_config["events"]["topic"])]
-#     consumer = topic.get_simple_consumer(consumer_group=b'event_group',
-#     reset_offset_on_start=False,
-#     auto_offset_reset=OffsetType.EARLIEST)
-#     # This is blocking - it will wait for a new message
-#     for msg in consumer:
-#         msg_str = msg.value.decode('utf-8')
-#         msg = json.loads(msg_str)
-#         logger.info("Message: %s" % msg)
-#         payload = msg["payload"]
-#         session = DB_SESSION()  # Create a new session
-
-#         if msg["type"] == "card_input": # Change this to your event type
-#         # Store the event1 (i.e., the payload) to the DB
-#             card_input = add_card(**payload)
-#             session.add(card_input)
-    
-#         elif msg["type"] == "rate_seller":
-#             rate_seller = SellerRating(**payload)
-#             session.add(rate_seller)    
-
-#         #troubleshooting
-#         try:
-#             session.commit()
-#         except Exception as e:
-#             logger.error(f"Failed to commit session: {e}", exc_info=True)
-#             session.rollback()  
-#         finally:
-#             session.close()  
-
-#         consumer.commit_offsets()
 
 # @app.route('/cards/input-card', methods=['POST'])
 # def report_card_database():
@@ -150,13 +138,17 @@ def process_messages():
 
 @app.route('/cards/events/input-card', methods=['GET'])
 def get_card_input_events():
-    """Gets new card input events after the specified timestamp."""
-    timestamp = request.args.get('timestamp')
+    """Gets card input events between the specified start and end timestamps."""
+    start_timestamp = request.args.get('start_timestamp')
+    end_timestamp = request.args.get('end_timestamp')
     session = DB_SESSION()
     results_list = []
     try:
-        timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
-        card_events = session.query(add_card).filter(add_card.date_added >= timestamp_datetime)
+        start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+        end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+        card_events = session.query(add_card).filter(
+            and_(add_card.date_added >= start_timestamp_datetime,
+                 add_card.date_added < end_timestamp_datetime))
 
         for event in card_events:
             results_list.append(event.to_dict())
@@ -167,20 +159,22 @@ def get_card_input_events():
     finally:
         session.close()
 
-    logger.info(f"Query for card input events after {timestamp} returns {len(results_list)} results")
+    logger.info(f"Query for card input events between {start_timestamp} and {end_timestamp} returns {len(results_list)} results")
     return jsonify(results_list), 200
-
-        
 
 @app.route('/cards/events/rate-seller', methods=['GET'])
 def get_seller_rating_events():
-    """Gets new seller rating events after the specified timestamp."""
-    timestamp = request.args.get('timestamp')
+    """Gets seller rating events between the specified start and end timestamps."""
+    start_timestamp = request.args.get('start_timestamp')
+    end_timestamp = request.args.get('end_timestamp')
     session = DB_SESSION()
     results_list = []
     try:
-        timestamp_datetime = datetime.datetime.strptime(timestamp, "%Y-%m-%dT%H:%M:%S.%f")
-        rating_events = session.query(SellerRating).filter(SellerRating.date_rated >= timestamp_datetime)
+        start_timestamp_datetime = datetime.datetime.strptime(start_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+        end_timestamp_datetime = datetime.datetime.strptime(end_timestamp, "%Y-%m-%dT%H:%M:%S.%f")
+        rating_events = session.query(SellerRating).filter(
+            and_(SellerRating.date_rated >= start_timestamp_datetime,
+                 SellerRating.date_rated < end_timestamp_datetime))
 
         for event in rating_events:
             results_list.append(event.to_dict())
@@ -191,8 +185,8 @@ def get_seller_rating_events():
     finally:
         session.close()
 
-    logger.info(f"Query for seller rating events after {timestamp} returns {len(results_list)} results")
-    return jsonify(results_list), 200     
+    logger.info(f"Query for seller rating events between {start_timestamp} and {end_timestamp} returns {len(results_list)} results")
+    return jsonify(results_list), 200
 
 Base.metadata.create_all(DB_ENGINE)
 
@@ -200,4 +194,5 @@ if __name__ == "__main__":
     t1 = Thread(target=process_messages)
     t1.daemon = True
     t1.start()
+    create_kafka_client()
     app.run(port = '8090')
