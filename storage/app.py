@@ -17,23 +17,29 @@ from pykafka.common import OffsetType
 from threading import Thread
 from sqlalchemy import and_
 import time
+import os
 
+# Check environment and load configurations
+if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
+    print("In Test Environment")
+    app_conf_file = "/config/app_conf.yml"
+    log_conf_file = "/config/log_conf.yml"
+else:
+    print("In Dev Environment")
+    app_conf_file = "app_conf.yml"
+    log_conf_file = "log_conf.yml"
 
-# Logging conf
-with open('./log_conf.yml', 'r') as file:
-    config = yaml.safe_load(file)
-
-with open('./app_conf.yml', 'r') as f:
+with open(app_conf_file, 'r') as f:
     app_config = yaml.safe_load(f.read())
 
-logging.config.dictConfig(config)
+with open(log_conf_file, 'r') as f:
+    log_config = yaml.safe_load(f.read())
+logging.config.dictConfig(log_config)
 logger = logging.getLogger('basicLogger')
-
-# Datastore conf
-with open('app_conf.yml', 'r') as file:
-    db_config = yaml.safe_load(file)
+logger.info("App Conf File: %s" % app_conf_file)
+logger.info("Log Conf File: %s" % log_conf_file)
     
-DB_ENGINE = create_engine(db_config['datastore']['url'], echo=True)
+DB_ENGINE = create_engine(app_config['datastore']['url'], echo=True)
 hostname, port = DB_ENGINE.url.host, DB_ENGINE.url.port
 logger.info(f'MySQL database hostname: {hostname}, port: {port}')
 # DB_ENGINE = create_engine("mysql+mysqlconnector://root:password@localhost:3306/Cardapp", echo=True)
