@@ -83,12 +83,9 @@ def populate_stats():
     logger.info("Start Periodic Processing")
 
     stats_file = app_config['datastore']['filename']
-    # Read the current statistics from the JSON file
-    try:
-        with open(stats_file, 'r') as file:
-            stats = json.load(file)
-    except FileNotFoundError:   
-        # If file not found, populate with entries
+    # Check if the file exists. If not, create it with default values
+    if not os.path.exists(stats_file):
+        logger.info(f"Creating new stats file at {stats_file}")
         stats = {
             "num_card_events": 0,
             "num_seller_rating_events": 0,
@@ -96,8 +93,21 @@ def populate_stats():
             "max_seller_rating": 0.0,
             "last_updated": datetime.utcnow().isoformat()
         }
+        with open(stats_file, 'w') as file:
+            json.dump(stats, file)
+    else:
+        # Read the current statistics from the JSON file
+        try:
+            with open(stats_file, 'r') as file:
+                stats = json.load(file)
+        except FileNotFoundError:
+            logger.error("Failed to read stats file - file not found")
+            raise
+        except Exception as e:
+            logger.error(f"Error reading stats file: {e}")
+            raise
 
-    # Query the database to get the total number of events for each table
+    # Query the database to get the latest statistics
     session = DB_SESSION()
     try:
         total_card_events = calculate_num_card_events(session)
@@ -125,6 +135,7 @@ def populate_stats():
 
     logger.debug(f"Updated statistics: {updated_stats}")
     logger.info("Periodic processing has ended")
+
 
 def get_stats():
     """Handle GET request for /stats."""

@@ -1,7 +1,7 @@
 openapi: 3.0.0
 version: 1
 datastore:
-  filename: data.json
+  filename: /data/data.json
 scheduler:
   period_sec: 5
 eventstore:
