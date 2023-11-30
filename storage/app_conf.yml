@@ -1,7 +1,11 @@
 openapi: 3.0.0
 version: 1
 datastore:
-  url: mysql+pymysql://user:password@acit3855group45kafka.eastus2.cloudapp.azure.com:3306/events
+  user: user
+  password: password
+  hostname: acit3855group45kafka.eastus2.cloudapp.azure.com
+  port: 3306
+  db: events
 scheduler:
   period_sec: 5
 eventstore:
