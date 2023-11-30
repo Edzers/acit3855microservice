@@ -29,3 +29,14 @@ class SellerRating(Base):
             'comment': self.comment,
             'date_rated': self.date_rated
         }
+
+    @classmethod
+    def create_from_msg(cls, msg):
+        return cls(
+            seller_id=msg.get('seller_id', ''),
+            user_id=msg.get('user_id', ''),
+            rating=msg.get('rating', 0),
+            comment=msg.get('comment', ''),
+            date_rated=msg.get('date_rated', ''),
+            rating_id=msg.get('rating_id', None)  
+        )

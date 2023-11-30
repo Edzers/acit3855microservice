@@ -38,3 +38,15 @@ class add_card(Base):
             'seller_id': self.seller_id,
             'website': self.website
         }
+
+    @classmethod
+    def create_from_msg(cls, msg):
+        return cls(
+            brand=msg.get('brand', ''),
+            condition=msg.get('condition', ''),
+            date_added=msg.get('date_added', ''),
+            price=msg.get('price', 0),
+            seller_id=msg.get('seller_id', ''),
+            website=msg.get('website', ''),
+            card_id=msg.get('card_id', None)  
+        )

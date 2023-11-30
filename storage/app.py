@@ -19,6 +19,7 @@ from sqlalchemy import and_
 import time
 import os
 
+
 # Check environment and load configurations
 if "TARGET_ENV" in os.environ and os.environ["TARGET_ENV"] == "test":
     print("In Test Environment")
@@ -87,12 +88,33 @@ def process_messages():
                 msg = json.loads(msg_str)
                 logger.info("Received message: %s" % msg)
                 # Process the message here
+                process_individual_message(msg)
+
             else:
                 logger.warning("Received None message")
     except Exception as e:
         logger.error(f"Error in process_messages: {str(e)}", exc_info=True)
 
+def process_individual_message(msg):
+    session = DB_SESSION()
+    try:
+        if msg['type'] == 'card_input':
+            card_event = add_card.create_from_msg(msg['payload'])
+            session.add(card_event)
+        elif msg['type'] == 'rate_seller':
+            rating_event = SellerRating.create_from_msg(msg['payload'])
+            session.add(rating_event)
+        else:
+            logger.warning(f"Received unknown message type: {msg['type']}")
+            return
 
+        session.commit()
+        logger.info(f"Processed {msg['type']} event and stored in database.")
+    except Exception as e:
+        session.rollback()
+        logger.error(f"Error processing message: {e}", exc_info=True)
+    finally:
+        session.close()
 
 # @app.route('/cards/input-card', methods=['POST'])
 # def report_card_database():
@@ -197,8 +219,8 @@ def get_seller_rating_events():
 Base.metadata.create_all(DB_ENGINE)
 
 if __name__ == "__main__":
+    create_kafka_client()
     t1 = Thread(target=process_messages)
     t1.daemon = True
     t1.start()
-    create_kafka_client()
-    app.run(port = '8090')
+    app.run(port='8090')
