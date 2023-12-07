@@ -1,0 +1,16 @@
+openapi: 3.0.0
+version: 1
+
+services:
+  receiver: http://localhost:8080/health
+  storage: http://localhost:8090/health
+  processing: http://localhost:8100/health
+  audit: http://localhost:8110/health
+
+scheduler:
+  period_sec: 20
+  timeout_sec: 5
+
+datastore:
+  type: json  
+  filename: health.json  

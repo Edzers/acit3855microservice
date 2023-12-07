@@ -164,6 +164,10 @@ def get_stats():
 
     return jsonify(stats_response), 200  # Use jsonify for automatic JSON response
 
+@app.route('/health', methods=['GET'])
+def health():
+    return NoContent, 200
+
 # def get_stats():
 #     """Handle GET request for /events/stats."""
 #     logger.info("Request for statistics started")

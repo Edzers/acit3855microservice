@@ -113,10 +113,17 @@ def get_rate_seller_event_route():
     except Exception as e:
         logger.error("Unhandled exception: %s", str(e), exc_info=True)
         return jsonify({"message": "Internal Server Error"}), 500
-
+    
+@app.route('/health', methods=['GET'])
+def health():
+    return NoContent, 200
 
 
 app.add_api('openapi.yml', arguments={'title': 'Audit API'})
 
+
+
 if __name__ == "__main__":
     app.run(port=8110)  
+    
+    

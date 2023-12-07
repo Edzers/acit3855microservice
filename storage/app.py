@@ -216,6 +216,10 @@ def get_seller_rating_events():
     logger.info(f"Query for seller rating events between {start_timestamp} and {end_timestamp} returns {len(results_list)} results")
     return jsonify(results_list), 200
 
+@app.route('/health', methods=['GET'])
+def health():
+    return NoContent, 200
+
 Base.metadata.create_all(DB_ENGINE)
 
 if __name__ == "__main__":

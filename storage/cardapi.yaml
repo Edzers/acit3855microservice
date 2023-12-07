@@ -79,6 +79,13 @@ paths:
                 properties:
                   message:
                     type: string
+  /health:
+      get:
+        summary: Health check endpoint
+        description: Returns a 200 response if the service is running
+        responses:
+          '200':
+            description: Service is running
 components:
   schemas:
     AddCardDatabase:

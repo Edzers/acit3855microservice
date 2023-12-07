@@ -67,6 +67,10 @@ def rate_seller():
     logger.info('Rating info sent to Kafka')
     return jsonify(status=201, content="Event Produced")
 
+@app.route('/health', methods=['GET'])
+def health():
+    return NoContent, 200
+
 app.add_api("cardapi.yaml")
 
 if __name__ == "__main__":
