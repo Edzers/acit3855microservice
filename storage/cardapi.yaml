@@ -80,12 +80,40 @@ paths:
                   message:
                     type: string
   /health:
-      get:
-        summary: Health check endpoint
-        description: Returns a 200 response if the service is running
-        responses:
-          '200':
-            description: Service is running
+    get:
+      tags:
+      - health
+      summary: Health check endpoint
+      description: Returns a 200 response if the service is running, with the current service statuses.
+      responses:
+        '200':
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  receiver:
+                    type: string
+                    enum: [Running, Down]
+                    example: Running
+                  storage:
+                    type: string
+                    enum: [Running, Down]
+                    example: Running
+                  processing:
+                    type: string
+                    enum: [Running, Down]
+                    example: Running
+                  audit:
+                    type: string
+                    enum: [Running, Down]
+                    example: Running
+                  last_update:
+                    type: string
+                    format: date-time
+                    example: '2022-03-22T11:12:23Z'
+                    
 components:
   schemas:
     AddCardDatabase:

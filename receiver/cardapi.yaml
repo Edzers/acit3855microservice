@@ -48,12 +48,22 @@ paths:
         "400":
           description: Invalid input
   /health:
-      get:
-        summary: Health check endpoint
-        description: Returns a 200 response if the service is running
-        responses:
-          '200':
-            description: Service is running
+    get:
+      tags:
+      - health
+      summary: Health check endpoint
+      description: Returns a 200 response if the service is running, with the current service status.
+      responses:
+        '200':
+          description: Service is running
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Service is running
 components:
   schemas:
     AddCardDatabase:
