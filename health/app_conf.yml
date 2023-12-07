@@ -13,4 +13,4 @@ scheduler:
 
 datastore:
   type: json  
-  filename: health.json  
+  filename: health_status.json  
