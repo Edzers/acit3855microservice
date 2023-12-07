@@ -13,7 +13,6 @@ services:
     image: receiver
     ports:
       - "8080:8080"
-      - "8120:8120"
     environment:
       - TARGET_ENV=test
     volumes:
@@ -26,7 +25,6 @@ services:
     image: storage
     ports:
       - "8090:8090"
-      - "8120:8120"
     environment:
       - TARGET_ENV=test
     volumes:
@@ -41,7 +39,6 @@ services:
     image: processing
     ports:
       - "8100:8100"
-      - "8120:8120"
     network_mode: "host"
     environment:
       - TARGET_ENV=test
@@ -57,7 +54,6 @@ services:
     image: audit_log
     ports:
       - "8110:8110"
-      - "8120:8120"
     environment:
       - TARGET_ENV=test
     volumes:
